@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container d-flex justify-content-center">
+    <div class="card shadow-sm p-5 text-center" style="max-width: 500px; border-top: 5px solid #ffb3ba;">
+        <h2 class="mb-4 text-danger">Are you sure?</h2>
+
+        <p class="lead">
+            You are about to delete: <br>
+            <strong class="fs-4">
+                {% if object.name %}{{ object.name }}{% elif object.username %}{{ object.username }}{% else %}this item{% endif %}
+            </strong>
+        </p>
+        <p class="text-muted">This action cannot be undone.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-grid gap-2 d-md-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-danger px-4">Yes, Delete</button>
+                <a href="javascript:history.back()" class="btn btn-primary px-4">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

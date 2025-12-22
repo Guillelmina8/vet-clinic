@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row align-items-center py-5">
+    <div class="col-lg-6">
+        <h1 class="display-3 fw-bold mb-4">
+            Best care for your <span style="color: #f8c8dc;">furry friends</span>
+        </h1>
+        <p class="lead mb-4">Professional veterinary services with a heart. We are here to keep your pets healthy and happy.</p>
+        <a href="{% url 'core:services' %}" class="btn btn-primary btn-lg px-5 shadow-sm">Explore Services</a>
+    </div>
+    <div class="col-lg-6 mt-5 mt-lg-0">
+        <img src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=800&q=80"
+             class="img-fluid rounded-5 shadow-lg" alt="Happy Dog">
+    </div>
+</div>
+
+<div class="row mt-5 g-4 text-center">
+    <div class="col-md-4">
+        <div class="p-4 rounded-4" style="background-color: #ffffff;">
+            <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=200&q=80" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+            <h4>Cat Care</h4>
+            <p class="small text-muted">Specialized treatments for our feline companions.</p>
+        </div>
+    </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+  <footer class="mt-5 py-5 bg-white border-top">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <h5 class="fw-bold" style="color: var(--dark-text);">Our Locations</h5>
+            <ul class="list-unstyled mt-3">
+              <li class="mb-2">
+                  <span class="me-2">📍</span>
+                  <strong>Kyiv:</strong> <span class="text-muted">Khmelnytskogo St, 15</span>
+              </li>
+              <li class="mb-2">
+                  <span class="me-2">📍</span>
+                  <strong>Lviv:</strong> <span class="text-muted">Shevchenka St, 80</span>
+              </li>
+              <li class="mb-2">
+                  <span class="me-2">📍</span>
+                  <strong>Odesa:</strong> <span class="text-muted">Varnenska St, 18</span>
+              </li>
+            </ul>
+        </div>
+        <div class="col-md-4 mb-4">
+            <h5 class="fw-bold">Contact Us</h5>
+            <p class="text-muted mb-1">📞 Emergency: (555) 000-111</p>
+            <p class="text-muted">📧 Email: hello@vetclinic.com</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+{% endblock %}
