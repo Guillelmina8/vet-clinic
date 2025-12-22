@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.urls import reverse
+from cloudinary.models import CloudinaryField
 
 
 class Species(models.TextChoices):
@@ -17,24 +17,28 @@ class Gender(models.TextChoices):
 
 
 class Location(models.TextChoices):
-    lviv = "lviv", "Lviv, Shevchenka 80"
-    kyiv = "kyiv", "Kyiv, Khmelnytskogo 15"
-    odesa = "odesa", "Varnenska 18"
+    lviv = "Lviv", "Lviv, Shevchenka 80"
+    kyiv = "Kyiv", "Kyiv, Khmelnytskogo 15"
+    odesa = "Odesa", "Varnenska 18"
 
 
 class User(AbstractUser):
     is_vet = models.BooleanField(default=False)
-    phone_number = models.CharField(blank=False, null=False, max_length=20)
+    phone_number = models.CharField(
+        blank=False, null=False, max_length=20, unique=True)
+    image = CloudinaryField(
+        "image",
+        folder="avatars/",
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "user"
         verbose_name_plural = "users"
 
-    def str(self):
-        return self.first_name + " " + self.last_name
-
-    def get_absolute_url(self):
-        ...
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}".strip() or self.username
 
 
 class Pet(models.Model):
@@ -43,7 +47,7 @@ class Pet(models.Model):
         blank=False,
         null=False,
         max_length=20,
-        choices=Species
+        choices=Species.choices
     )
     birth_date = models.DateField(blank=False, null=False)
     gender = models.CharField(
@@ -59,9 +63,18 @@ class Pet(models.Model):
         null=False,
         related_name="pets"
     )
+    image = CloudinaryField(
+        "image",
+        folder='avatars/',
+        null=True,
+        blank=True
+    )
 
     class Meta:
         ordering = ["name"]
+
+    def __str__(self):
+        return f"{self.get_species_display()} {self.name}".strip()
 
 
 class Appointment(models.Model):
@@ -83,15 +96,25 @@ class Appointment(models.Model):
         on_delete=models.CASCADE,
         blank=False,
         null=False,
-        related_name="vet_appointments"
+        related_name="vet_appointments",
+        limit_choices_to={"is_vet": True}
     )
     date_time = models.DateTimeField(blank=False, null=False)
     location = models.CharField(
         blank=False,
         null=False,
-        choices=Location.choices
+        choices=Location.choices,
+        max_length=20
     )
-    brief_complaints = models.TextField(blank=False, null=False, max_length=300)
+    brief_complaints = models.TextField(
+        blank=False,
+        null=False,
+        max_length=300
+    )
+
+    def __str__(self):
+        return (f"{self.date_time.strftime('%d.%m %H:%M')}"
+                f" - {self.pet.name} до {self.vet.last_name}")
 
 
 class MedicalCard(models.Model):
@@ -99,9 +122,14 @@ class MedicalCard(models.Model):
         Pet,
         on_delete=models.CASCADE,
         blank=False,
-        null=False
+        null=False,
+        related_name="medical_cards"
     )
     diagnosis = models.TextField(blank=False, null=False, max_length=300)
     treatment = models.TextField(blank=False, null=False, max_length=300)
-    notes = models.TextField(blank=True, null=True, max_length=300)
+    notes = models.TextField(blank=True, max_length=300)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return (f"Visit from {self.created_at.date()} "
+                f"for {self.pet.name}")
