@@ -15,6 +15,7 @@ import os
 import cloudinary
 import cloudinary.api
 import cloudinary.uploader
+import mimetypes
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,13 +25,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-!uy2e94@4c$(7=&=cnxti2y)g6vjcymvr169=#spicb2ml1zp0"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-!uy2e94@4c$(7=&=cnxti2y)g6vjcymvr169=#spicb2ml1zp0")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DJANGO_DEBUG", "True") != "False"
+print(f"--- DEBUG VALUE IS: {DEBUG} ---")
+print(f"--- RAW ENV VALUE: '{os.environ.get('DJANGO_DEBUG')}' ---")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1"]
 
+INTERNAL_IPS = ["127.0.0.1"]
+
+mimetypes.add_type("application/javascript", ".js", True)
 
 # Application definition
 
@@ -41,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "debug_toolbar",
     "core",
     "django_bootstrap5",
     "cloudinary_storage",
@@ -49,6 +56,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -62,7 +70,8 @@ ROOT_URLCONF = "vet_clinic.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates']
+        "APP_DIRS": True,
+        "DIRS": [BASE_DIR / "templates"]
         ,
         "APP_DIRS": True,
         "OPTIONS": {
@@ -121,7 +130,7 @@ USE_TZ = True
 
 AUTH_USER_MODEL = "core.User"
 
-LOGIN_REDIRECT_URL = 'core:index'
+LOGIN_REDIRECT_URL = "/"
 
 LOGOUT_REDIRECT_URL = 'core:index'
 
