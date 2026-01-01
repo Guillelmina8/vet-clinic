@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from phonenumber_field.modelfields import PhoneNumberField
 from cloudinary.models import CloudinaryField
 
 
@@ -24,7 +25,7 @@ class Location(models.TextChoices):
 
 class User(AbstractUser):
     is_vet = models.BooleanField(default=False)
-    phone_number = models.CharField(
+    phone_number = PhoneNumberField(
         blank=False, null=False, max_length=20, unique=True)
     image = CloudinaryField(
         "image",
@@ -85,7 +86,7 @@ class Appointment(models.Model):
         null=True
     )
     owner = models.ForeignKey(
-        User,
+        get_user_model(),
         on_delete=models.CASCADE,
         blank=False,
         null=False,
