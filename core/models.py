@@ -1,7 +1,8 @@
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from phonenumber_field.modelfields import PhoneNumberField
 from cloudinary.models import CloudinaryField
 
 
@@ -21,25 +22,6 @@ class Location(models.TextChoices):
     lviv = "Lviv", "Lviv, Shevchenka 80"
     kyiv = "Kyiv", "Kyiv, Khmelnytskogo 15"
     odesa = "Odesa", "Varnenska 18"
-
-
-class User(AbstractUser):
-    is_vet = models.BooleanField(default=False)
-    phone_number = PhoneNumberField(
-        blank=False, null=False, max_length=20, unique=True)
-    image = CloudinaryField(
-        "image",
-        folder="avatars/",
-        null=True,
-        blank=True
-    )
-
-    class Meta:
-        verbose_name = "user"
-        verbose_name_plural = "users"
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}".strip() or self.username
 
 
 class Pet(models.Model):
@@ -101,6 +83,7 @@ class Appointment(models.Model):
         limit_choices_to={"is_vet": True}
     )
     date_time = models.DateTimeField(blank=False, null=False)
+    duration = models.PositiveIntegerField(default=30)
     location = models.CharField(
         blank=False,
         null=False,
@@ -116,6 +99,32 @@ class Appointment(models.Model):
     def __str__(self):
         return (f"{self.date_time.strftime('%d.%m %H:%M')}"
                 f" - {self.pet.name} до {self.vet.last_name}")
+
+    def clean(self):
+        super().clean()
+        if not self.date_time or not self.vet:
+            return
+
+        new_start = self.date_time
+        new_end = new_start + timedelta(minutes=self.duration)
+
+        overlapping = Appointment.objects.filter(
+            vet=self.vet,
+            date_time__lt=new_end,
+        ).exclude(pk=self.pk)
+
+        for existing in overlapping:
+            existing_start = existing.date_time
+            existing_end = existing_start + timedelta(
+                minutes=existing.duration
+            )
+
+            if new_start < existing_end and new_end > existing_start:
+                raise ValidationError(
+                    f"This time slot ({existing_start.strftime('%H:%M')} - "
+                    f"{existing_end.strftime('%H:%M')}) is already "
+                    f"booked for this vet."
+                )
 
 
 class MedicalCard(models.Model):

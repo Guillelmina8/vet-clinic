@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "debug_toolbar",
+    "user",
     "core",
     "django_bootstrap5",
     "cloudinary_storage",
@@ -111,7 +112,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-AUTH_USER_MODEL = "core.User"
+AUTH_USER_MODEL = "user.User"
 
 LOGIN_REDIRECT_URL = "/"
 
