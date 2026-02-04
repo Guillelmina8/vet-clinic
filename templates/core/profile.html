@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - VetClinic{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center">
+    <div class="card shadow-sm p-4 text-center" style="max-width: 500px; width: 100%; border-top: 5px solid var(--pastel-pink) !important;">
+        <div class="mb-4">
+            {% if user.image %}
+                <img src="{{ user.image.url }}" class="rounded-circle border border-5 border-white shadow-sm" alt="avatar" style="width: 150px; height: 150px; object-fit: cover;">
+            {% else %}
+                <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center border border-5 border-white shadow-sm" style="width: 150px; height: 150px; font-size: 4rem;">
+                  <img src="{% if user.is_vet %}{% static 'images/blue_monster.jpg' %}{% else %}{% static 'images/green_monster.jpg' %}{% endif %}" class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center border border-5 border-white shadow-sm"
+                     style="width: 150px; height: 150px; font-size: 4rem;">
+                </div>
+            {% endif %}
+        </div>
+
+        <h2 class="fw-bold">{{ user.first_name }} {{ user.last_name }}</h2>
+        <p class="text-muted">@{{ user.username }}</p>
+
+        <div class="bg-light rounded p-3 mb-4 text-start">
+            <p class="mb-1"><strong>Phone:</strong> {{ user.phone_number }}</p>
+            <p class="mb-1"><strong>Role:</strong> {% if user.is_vet %}Veterinarian{% else %}Client{% endif %}</p>
+        </div>
+
+        <div class="d-grid gap-2">
+            <a href="{% url 'core:update' pk=user.id %}" class="btn btn-primary">Edit Profile</a>
+            <a href="{% url 'core:delete' pk=user.id %}" class="btn btn-outline-danger btn-sm border-0 mt-2">Delete account</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

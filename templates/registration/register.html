@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Register - VetClinic{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center">
+    <div class="card shadow p-4 login-container" style="max-width: 500px;">
+        <h2 class="text-center mb-4">Join our Clinic</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
+            </div>
+        </form>
+
+        <div class="text-center mt-3">
+            <p class="small">Already have an account? <a href="{% url 'core:login' %}" class="text-decoration-none">Login here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% include "includes/pagination.html" %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>📅 Appointments</h1>
+    <a href="{% url 'core:appointment-create' %}" class="btn btn-primary">+ Book Appointment</a>
+  </div>
+
+  <div class="table-responsive bg-white p-3 rounded-4 shadow-sm">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+      <tr>
+        <th>Date & Time</th>
+        <th>Pet</th>
+        <th>{% if user.is_vet %}Owner{% else %}Veterinarian{% endif %}</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for app in object_list %}
+        <tr>
+          <td><strong>{{ app.date_time|date:"d M, H:i" }}</strong></td>
+          <td>{{ app.pet.name }}</td>
+          <td>
+            {% if user.is_vet %} {{ app.owner.username }} {% else %} Dr. {{ app.vet.last_name }} {% endif %}
+          </td>
+          <td><span class="badge bg-light text-dark border">{{ app.location }}</span></td>
+          <td><span class="badge bg-info text-white">Scheduled</span></td>
+          <td>
+            <form method="post" action="{% url 'core:appointment-delete' app.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger btn-sm"
+                      onclick="return confirm('Cancel this appointment?')">Cancel
+              </button>
+            </form>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="6" class="text-center py-4 text-muted">No appointments found.</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
